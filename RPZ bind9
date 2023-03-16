@@ -115,3 +115,12 @@ Caso queira criar um log separado para o RPZ, siga os passos abaixo.
  #   };
  #   category rpz { rpzlog; };
  # };
+ 
+"Checa se não existe algum erro"
+
+  -> named-checkconf
+
+"Reinicia o Bind9"
+
+  -> systemctl restart bind9
+  
