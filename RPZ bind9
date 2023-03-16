@@ -95,3 +95,23 @@ Colar as linhas abaixo de "options {"
 "Reinicia o Bind9"
 
   -> systemctl restart bind9
+  
+  
+  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////
+  
+  OS PROXIMOS PASSO SÃO OPCIONAIS.
+
+Caso queira criar um log separado para o RPZ, siga os passos abaixo.
+
+ -> nano /etc/bind/named.conf
+ 
+ # logging {
+ #    channel rpzlog {
+ #  	file "/var/log/named/rpz.log" versions unlimited size 100m;
+ #   	print-time yes;
+ #   	print-category yes;
+ #   	print-severity yes;
+ #   	severity info;
+ #   };
+ #   category rpz { rpzlog; };
+ # };
