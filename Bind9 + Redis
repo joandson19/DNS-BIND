@@ -1,0 +1,40 @@
+ Configurar o BIND para usar o Redis como cache, você pode melhorar significativamente o desempenho do servidor DNS ao reduzir o tempo de resposta e minimizar o tráfego de rede. No entanto, é importante monitorar o tamanho do cache do Redis e ajustar as configurações de acordo para evitar o uso excessivo de memória.
+ 
+ # Não esqueça de descomentar #
+
+Instale o BIND e o Redis no seu servidor, caso ainda não estejam instalados. Por exemplo, no Debian, você pode executar os seguintes comandos:
+
+-> apt-get update
+-> apt-get install bind9 redis-server
+
+Configure o BIND para usar o Redis como cache adicionando as seguintes linhas ao arquivo de configuração do BIND (/etc/bind/named.conf.options):
+Essas linhas configuram o BIND para usar uma zona de resposta (response-policy) chamada "redis" e especificam um arquivo de zona de resposta (/etc/bind/db.redis) que será usado para armazenar o cache do Redis.
+
+# options {
+#    // ... outras opções ...
+#    response-policy { zone "redis"; };
+# };
+# 
+# zone "redis" {
+#    type master;
+#    file "/etc/bind/db.redis";
+#    allow-query { any; };
+# };
+
+Crie o arquivo de zona de resposta (/etc/bind/db.redis) com as configurações do Redis:
+Este arquivo define um registro de recurso de autoridade (SOA) e um registro de servidor de nomes (NS) para a zona "redis", com o endereço IP do servidor Redis definido como 127.0.0.1.
+
+# $TTL 600
+# @       IN      SOA     redis. root.redis. (
+#                     1         ; Serial
+#                     600       ; Refresh
+#                     600       ; Retry
+#                     600       ; Expire
+#                     600 )     ; Negative Cache TTL
+# @       IN      NS      redis.
+# redis.  IN      A       127.0.0.1
+
+Reinicie o BIND e o Redis para aplicar as alterações:
+
+-> systemctl restart bind9
+-> systemctl restart redis-server
