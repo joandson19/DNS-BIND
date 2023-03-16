@@ -59,7 +59,7 @@ Colar as linhas abaixo de "options {"
   -> mkdir /var/cache/bind/rpz/
   -> ln -s /var/cache/bind/rpz/ /etc/bind/rpz
 
-"Note que no caso do Slave eu vou apenas copiar o db.empy já que o master irá reescrever o arquivo."
+"Note que no caso do Slave eu vou apenas copiar o db.empty já que o master irá reescrever o arquivo."
 
   -> cp /etc/bind/db.empty /var/cache/bind/rpz/db.rpz.zone
 
