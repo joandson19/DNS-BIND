@@ -1,0 +1,97 @@
+* DNS MASTER
+
+  -> mkdir /var/cache/bind/rpz/
+  -> ln -s /var/cache/bind/rpz/ /etc/bind/rpz
+  -> nano /var/cache/bind/rpz/db.rpz.zone
+
+# $TTL 1H
+# @       IN      SOA LOCALHOST. localhost.localhost. (
+#                 2022042801      ; Serial  
+#                 1h              ; Refresh
+#                 15m             ; Retry
+#                 30d             ; Expire 
+#                 2h              ; Negative Cache TTL
+#         )
+#         NS  localhost.
+#  
+# sitequeprecisabloquear.com     IN CNAME .
+# *.sitequeprecisabloquear.com   IN CNAME .
+# elesmandamnosfaz.bo.bo         IN CNAME .
+# *.elesmandamnosfaz.bo.bo       IN CNAME .
+##
+
+  -> nano /etc/bind/named.conf.local
+
+# zone "rpz.zone" {
+#    type master;
+#    file "/var/cache/bind/rpz/db.rpz.zone";
+#    allow-query { localhost; };
+#    allow-transfer { IP.DO.DNS.SLAVE; };
+#    also-notify { IP.DO.DNS.SLAVE; };
+# };
+##
+
+  -> nano /etc/bind/named.conf.options
+
+Colar as linhas abaixo de "options {" 
+#    // RPZ
+#     response-policy {
+#      zone "rpz.zone" policy CNAME localhost;
+#	};
+##
+
+"Confere as permições ao bind"
+
+  -> chown bind. /var/cache/bind/rpz/ -R
+
+"Checa se não existe algum erro"
+
+  -> named-checkconf
+
+"Reinicia o Bind9"
+
+  -> systemctl restart bind9
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////////////////////
+
+* DNS SLAVE
+
+  -> mkdir /var/cache/bind/rpz/
+  -> ln -s /var/cache/bind/rpz/ /etc/bind/rpz
+
+"Note que no caso do Slave eu vou apenas copiar o db.empy já que o master irá reescrever o arquivo."
+
+  -> cp /etc/bind/db.empty /var/cache/bind/rpz/db.rpz.zone
+
+  -> nano /etc/bind/named.conf.local
+
+# zone "rpz.zone" {
+#    type slave;
+#    file "/var/cache/bind/rpz/db.rpz.zone";
+#    master { IP.DO.DNS.MASTER; };
+#    allow-notify { IP.DO.DNS.MASTER; };
+#    allow-transfer { none; };
+#    allow-query { localhost; };
+# };
+##
+
+  -> nano /etc/bind/named.conf.options
+
+Colar as linhas abaixo de "options {" 
+#    // RPZ
+#     response-policy {
+#      zone "rpz.zone" policy CNAME localhost;
+#	};
+##
+
+"Confere as permições ao bind"
+
+  -> chown bind. /var/cache/bind/rpz/ -R
+
+"Checa se não existe algum erro"
+
+  -> named-checkconf
+
+"Reinicia o Bind9"
+
+  -> systemctl restart bind9
